@@ -55,7 +55,7 @@ docker build -t ibfrontend:v1 .
 docker tag ibfrontend:v1 367174123714.dkr.ecr.us-west-2.amazonaws.com/ibfrontend:v1
 docker push 367174123714.dkr.ecr.us-west-2.amazonaws.com/ibfrontend:v1
 
-cd ../../../../ib-frontend-m2-v2/
+cd ../../../../ib-frontend-me-v2/
 git pull
 mvn -Pprod clean verify -DskipTests=true
 rm -f ./src/main/docker/app.jar
