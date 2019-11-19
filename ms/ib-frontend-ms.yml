@@ -4,7 +4,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ib-frontend-ms
+  name: ib-frontend-ms-v1
   labels:
     app: ib-frontend-ms
     version: v1
@@ -55,7 +55,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ib-frontend-ms
+  name: ib-frontend-ms-v2
   labels:
     app: ib-frontend-ms
     version: v2
