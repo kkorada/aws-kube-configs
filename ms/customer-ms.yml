@@ -2,11 +2,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: customer-ms
+  labels:
+    app: customer-ms
+    version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: customer-ms
+      version: v1
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -17,6 +21,7 @@ spec:
       creationTimestamp: null
       labels:
         app: customer-ms
+        version: v1
     spec:
       containers:
       - env:
