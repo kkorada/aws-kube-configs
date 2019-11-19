@@ -1,17 +1,17 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: ib-frontend-service
+  name: accounts-service
 spec:
   hosts:
-    - ib-frontend-service
+    - accounts-service
   http:
   - route:
     - destination:
-        host: ib-frontend-service
+        host: accounts-service
         subset: v1
       weight: 50
     - destination:
-        host: ib-frontend-service
+        host: accounts-service
         subset: v2
       weight: 50

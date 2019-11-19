@@ -41,6 +41,7 @@ git clone https://github.com/kkorada/ib-frontend-me-v1.git
 git clone https://github.com/kkorada/ib-frontend-me-v2.git
 git clone https://github.com/kkorada/ib-customers-service.git
 git clone https://github.com/kkorada/ib-accounts-service.git
+git clone https://github.com/kkorada/ib-accounts-service-v2.git
 git clone https://github.com/kkorada/ib-transactions-service.git
 git clone https://github.com/kkorada/ib-kube-configs.git
 
@@ -61,9 +62,9 @@ mvn -Pprod clean verify -DskipTests=true
 rm -f ./src/main/docker/app.jar
 cp target/*.jar ./src/main/docker/app.jar
 cd ./src/main/docker/
-docker build -t ibfrontend:v2 .
-docker tag ibfrontend:v2 367174123714.dkr.ecr.us-west-2.amazonaws.com/ibfrontend:v2
-docker push 367174123714.dkr.ecr.us-west-2.amazonaws.com/ibfrontend:v2
+docker build -t ibfrontend:v3 .
+docker tag ibfrontend:v3 367174123714.dkr.ecr.us-west-2.amazonaws.com/ibfrontend:v3
+docker push 367174123714.dkr.ecr.us-west-2.amazonaws.com/ibfrontend:v3
 
 cd ../../../../ib-customers-service/
 git pull https://github.com/kkorada/ib-customers-service.git
@@ -76,7 +77,7 @@ docker tag customerservice:latest 367174123714.dkr.ecr.us-west-2.amazonaws.com/c
 docker push 367174123714.dkr.ecr.us-west-2.amazonaws.com/customerservice
 
 cd ../../../../ib-accounts-service/
-git pull https://github.com/kkorada/ib-accounts-service.git
+git pull
 mvn -Pprod clean verify -DskipTests=true
 rm -f ./src/main/docker/app.jar
 cp target/*.jar ./src/main/docker/app.jar
@@ -84,6 +85,16 @@ cd ./src/main/docker/
 docker build -t accountservice .
 docker tag accountservice:latest 367174123714.dkr.ecr.us-west-2.amazonaws.com/accountservice
 docker push 367174123714.dkr.ecr.us-west-2.amazonaws.com/accountservice
+
+cd ../../../../ib-accounts-service-v2/
+git pull
+mvn -Pprod clean verify -DskipTests=true
+rm -f ./src/main/docker/app.jar
+cp target/*.jar ./src/main/docker/app.jar
+cd ./src/main/docker/
+docker build -t accountservice:v2 .
+docker tag accountservice:v2 367174123714.dkr.ecr.us-west-2.amazonaws.com/accountservice:v2
+docker push 367174123714.dkr.ecr.us-west-2.amazonaws.com/accountservice:v2
 
 cd ../../../../ib-transactions-service/
 git pull https://github.com/kkorada/ib-transactions-service.git
@@ -99,4 +110,5 @@ cd ../../../../
 export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
 export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+echo $GATEWAY_URL
 istioctl profile dump --config-path values.global.mtls demo

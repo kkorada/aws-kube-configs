@@ -9,4 +9,43 @@ spec:
   - route:
     - destination:
         host: ib-frontend-service
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: customer-service
+spec:
+  hosts:
+  - customer-service
+  http:
+  - route:
+    - destination:
+        host: customer-service
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: accounts-service
+spec:
+  hosts:
+  - accounts-service
+  http:
+  - route:
+    - destination:
+        host: accounts-service
         subset: v2
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: trnx-service
+spec:
+  hosts:
+  - trnx-service
+  http:
+  - route:
+    - destination:
+        host: trnx-service
+        subset: v1
