@@ -1,0 +1,101 @@
+##################################################################################################
+# IB FRONTEND V1 service
+##################################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ib-frontend-ms
+  labels:
+    app: ib-frontend-ms
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ib-frontend-ms
+      version: v1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ib-frontend-ms
+        version: v1
+    spec:
+      containers:
+      - env:
+        - name: SPRING_PROFILES_ACTIVE
+          valueFrom:
+            configMapKeyRef:
+              key: SPRING_PROFILES_ACTIVE
+              name: app-config
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:mysql://ib-frontend-ms-db-service:3306/mysqldb
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              key: SPRING_DATASOURCE_USERNAME
+              name: app-config
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: SPRING_DATASOURCE_PASSWORD
+              name: app-config
+        image: 367174123714.dkr.ecr.us-west-2.amazonaws.com/ibfrontend:v1
+        imagePullPolicy: Always
+        name: ibfrontend
+---
+##################################################################################################
+# IB FRONTEND V2 service
+##################################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ib-frontend-ms
+  labels:
+    app: ib-frontend-ms
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ib-frontend-ms
+      version: v2
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ib-frontend-ms
+        version: v2
+    spec:
+      containers:
+      - env:
+        - name: SPRING_PROFILES_ACTIVE
+          valueFrom:
+            configMapKeyRef:
+              key: SPRING_PROFILES_ACTIVE
+              name: app-config
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:mysql://ib-frontend-ms-db-service:3306/mysqldb
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              key: SPRING_DATASOURCE_USERNAME
+              name: app-config
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: SPRING_DATASOURCE_PASSWORD
+              name: app-config
+        image: 367174123714.dkr.ecr.us-west-2.amazonaws.com/ibfrontend:v2
+        imagePullPolicy: Always
+        name: ibfrontend

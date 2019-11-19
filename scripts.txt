@@ -1,0 +1,97 @@
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl version
+curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
+kubectl version --short --client
+curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator
+chmod +x ./aws-iam-authenticator
+mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$HOME/bin:$PATH
+echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
+aws-iam-authenticator help
+aws configure
+aws eks --region us-west-2 update-kubeconfig --name adc-eks-01
+kubectl get pods
+curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.4.0 sh -
+cd istio-1.4.0
+export PATH=$PWD/bin:$PATH
+istioctl version
+kubectl get svc -n istio-system
+
+sudo yum install -y git
+sudo yum -y install docker
+sudo service docker start
+sudo chmod 666 /var/run/docker.sock
+sudo yum install -y java-1.8.0-devel
+sudo /usr/sbin/alternatives --config java
+sudo /usr/sbin/alternatives --config javac
+java -version
+sudo wget https://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+sudo sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
+sudo yum install -y apache-maven
+mvn --version
+
+$(aws ecr get-login --no-include-email --region us-west-2)
+
+mkdir ibdemo
+cd ibdemo
+
+git clone https://github.com/kkorada/ib-frontend.git
+git clone https://github.com/kkorada/ib-customers-service.git
+git clone https://github.com/kkorada/ib-accounts-service.git
+git clone https://github.com/kkorada/ib-transactions-service.git
+git clone https://github.com/kkorada/ib-kube-configs.git
+
+
+cd ./ib-frontend/
+git pull
+mvn -Pprod clean verify -DskipTests=true
+rm -f ./src/main/docker/app.jar
+cp target/*.jar ./src/main/docker/app.jar
+cd ./src/main/docker/
+docker build -t ibfrontend:v1 .
+docker tag ibfrontend:v1 367174123714.dkr.ecr.us-west-2.amazonaws.com/ibfrontend:v1
+docker push 367174123714.dkr.ecr.us-west-2.amazonaws.com/ibfrontend:v1
+
+cd ../../../../ib-customers-service/
+git pull https://github.com/kkorada/ib-customers-service.git
+mvn -Pprod clean verify -DskipTests=true
+rm -f ./src/main/docker/app.jar
+cp target/*.jar ./src/main/docker/app.jar
+cd ./src/main/docker/
+docker build -t customerservice .
+docker tag customerservice:latest 367174123714.dkr.ecr.us-west-2.amazonaws.com/customerservice
+docker push 367174123714.dkr.ecr.us-west-2.amazonaws.com/customerservice
+
+cd ../../../../ib-accounts-service/
+git pull https://github.com/kkorada/ib-accounts-service.git
+mvn -Pprod clean verify -DskipTests=true
+rm -f ./src/main/docker/app.jar
+cp target/*.jar ./src/main/docker/app.jar
+cd ./src/main/docker/
+docker build -t accountservice .
+docker tag accountservice:latest 367174123714.dkr.ecr.us-west-2.amazonaws.com/accountservice
+docker push 367174123714.dkr.ecr.us-west-2.amazonaws.com/accountservice
+
+cd ../../../../ib-transactions-service/
+git pull https://github.com/kkorada/ib-transactions-service.git
+mvn -Pprod clean verify -DskipTests=true
+rm -f ./src/main/docker/app.jar
+cp target/*.jar ./src/main/docker/app.jar
+cd ./src/main/docker/
+docker build -t transactionservice .
+docker tag transactionservice:latest 367174123714.dkr.ecr.us-west-2.amazonaws.com/transactionservice
+docker push 367174123714.dkr.ecr.us-west-2.amazonaws.com/transactionservice
+cd ../../../../
+
+cd ./ib-frontend-v2/
+git pull
+mvn -Pprod clean verify -DskipTests=true
+rm -f ./src/main/docker/app.jar
+cp target/*.jar ./src/main/docker/app.jar
+cd ./src/main/docker/
+docker build -t ibfrontend:v2 .
+docker tag ibfrontend:v2 367174123714.dkr.ecr.us-west-2.amazonaws.com/ibfrontend:v2
+docker push 367174123714.dkr.ecr.us-west-2.amazonaws.com/ibfrontend:v2
+
