@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: customer-ms
+  name: customer-ms-v1
   labels:
     app: customer-ms
     version: v1
@@ -22,6 +22,54 @@ spec:
       labels:
         app: customer-ms
         version: v1
+    spec:
+      containers:
+      - env:
+        - name: SPRING_PROFILES_ACTIVE
+          valueFrom:
+            configMapKeyRef:
+              key: SPRING_PROFILES_ACTIVE
+              name: app-config
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:mysql://customer-ms-db-service:3306/mysqldb
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              key: SPRING_DATASOURCE_USERNAME
+              name: app-config
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: SPRING_DATASOURCE_PASSWORD
+              name: app-config
+        image: 367174123714.dkr.ecr.us-west-2.amazonaws.com/customerservice:latest
+        imagePullPolicy: Always
+        name: customerservice
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer-ms-v2
+  labels:
+    app: customer-ms
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customer-ms
+      version: v2
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: customer-ms
+        version: v2
     spec:
       containers:
       - env:
